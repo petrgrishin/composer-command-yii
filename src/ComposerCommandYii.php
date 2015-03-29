@@ -9,18 +9,20 @@ use Exception;
 use Yii;
 
 class ComposerCommandYii {
-    public static $isInit;
-
-    public static function loadConsoleApplication() {
+    /**
+     * @return \CConsoleApplication
+     * @throws Exception
+     */
+    public static function getConsoleApplication() {
         throw new Exception(sprintf('Implement method `%s` for init console application', __METHOD__));
     }
 
     public static function __callStatic($cmd, $params) {
-        if (!static::$isInit) {
-            static::loadConsoleApplication();
-            static::$isInit = true;
+        /** @var \CConsoleApplication $app */
+        static $app;
+        if (!$app) {
+            $app = static::getConsoleApplication();
         }
-        $app = Yii::app();
         $app->getCommandRunner()->run(explode('_', $cmd));
     }
 }
